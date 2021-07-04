@@ -33,11 +33,9 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     'rest_framework',
-    'corsheaders',
-    'django_filters',
 ]
 
-CORS_ORIGIN_WHITELIST = ( 'http://127.0.0.1:8000', )
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -50,16 +48,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
        'rest_framework.permissions.AllowAny',
     ],
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend',
-        'rest_framework.filters.SearchFilter',
-    ],
 }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -113,10 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_HTTPONLY = True
-
 
 LANGUAGE_CODE = 'ru'
 
@@ -138,4 +127,3 @@ LOGIN_REDIRECT_URL = '/'
 
 STAIC_DIR = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [STAIC_DIR]
-CORS_ORIGIN_ALLOW_ALL = True
