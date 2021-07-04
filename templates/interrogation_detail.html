@@ -1,0 +1,95 @@
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <title>"API"</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+</head>
+<body>
+{% verbatim %}
+  <div id="app">
+      <div v-if="active">
+          <h1>{{ obj.title }}</h1>
+          <div>{{ obj.description }}</div>
+          <h3>{{ obj.questions[number_of_question].text }}</h3>
+            <p>
+              <p v-if="obj.questions[number_of_question].type == 'One option'">
+                  <select  @change="valid_field"  v-model="checkedModels">
+                      <option v-for="choice in obj.questions[number_of_question].choices" >{{choice.title}}</option>
+                  </select>
+              </p>
+              <p v-else-if="obj.questions[number_of_question].type == 'Several options'" v-for="choice in obj.questions[number_of_question].choices">
+                  <input @change="valid_field" type="checkbox" v-bind:id='choice.pk' v-bind:value='choice.title' v-model="checkedModels">
+                  <label for='choice.pk'>{{choice.title}}</label>
+              </p>
+              <p v-else>
+                  <textarea @input='valid_field' v-model="checkedModels" placeholder="введите несколько строчек"></textarea>
+              </p>
+          </p>
+
+          <div v-if="is_error">Что-нибудь выберите</div>
+        <button v-if="!is_error" v-on:click="greet">Ответить</button>
+      </div>
+  </div>
+  <script src="https://unpkg.com/vue"></script>
+  <script>
+      var app = new Vue({
+          el: '#app',
+          data: {
+              checkedModels: [],
+              obj: {},
+              number_of_question: 0,
+              active: true,
+              postId: 0,
+              is_error: true,
+          },
+           methods: {
+            greet: function (event) {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                  const requestOptions = {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "X-CSRF-TOKEN": csrftoken,
+                              "Accept": "application/json",
+                              'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                    'answers': this.checkedModels,
+                    'question_id': this.obj.questions[this.number_of_question].id,
+                    'interrogation_id': this.obj.id,
+                    })
+                  };
+                  fetch("http://127.0.0.1:8000/answer/", requestOptions)
+                    .then(response => response.json())
+                    .then(data => (this.postId = data.id)).catch(error => {
+                      this.errorMessage = error;
+                      console.error('There was an error!', error);
+                    });
+                this.checkedModels = [];
+                this.number_of_question++;
+                if (this.obj.questions.length <= (this.number_of_question)) {this.active = false; window.location.href = 'http://127.0.0.1:8000/interrogations';}
+                this.is_error = true;
+            },
+            valid_field: function (event) {
+                if(this.checkedModels != true){
+                    this.is_error = false;
+                } else this.is_error = true;
+            },
+           },
+          created: async function(){
+            const res = await fetch('http://127.0.0.1:8000/api-interrogations/detail/'+{% endverbatim %}{{id}}{% verbatim %}, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+            }).then(response => response.json())
+           .then(data => (this.obj = data, console.log(data)));
+          },
+      });
+  </script>
+{% endverbatim %}
+</body>
+</html>

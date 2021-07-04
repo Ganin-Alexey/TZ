@@ -1,0 +1,51 @@
+{% csrf_token %}
+<!DOCTYPE html>
+<html lang="ru" dir="ltr">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <title>"API"</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+</head>
+<body>
+{% verbatim %}
+  <div id="app">
+      <h3><a href="#" v-on:click="go_back">Вернуться назад</a></h3>
+      <div v-for="title in obj_title.reverse()">
+          <h2>{{title.interrogation__title}} - Ответы</h2>
+          <p v-for="obj in objs" v-if="obj.interrogation == title.interrogation__title">
+              Вопрос-Ответ: {{obj.question}} - {{obj.choice}}
+          </p>
+      </div>
+  </div>
+  <script src="https://unpkg.com/vue"></script>
+  <script>
+      var app = new Vue({
+          el: '#app',
+          data: {
+              checkedModels: [],
+              objs: {},
+              obj_title: {},
+              postId: 0,
+          },
+           methods: {
+           go_back: function(event) {
+                window.location.href = 'http://127.0.0.1:8000/interrogations';
+           }
+           },
+          created: async function(){
+            const res = await fetch('http://127.0.0.1:8000/api-interrogations/answered/'+{% endverbatim %}{{user_id}}{% verbatim %}, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+            }).then(response => response.json())
+           .then(data => (this.objs = data, this.obj_title = this.objs.pop(-1)));
+          },
+      });
+  </script>
+{% endverbatim %}
+</body>
+</html>
