@@ -13,7 +13,7 @@
   <div id="app">
       <h3>Опросники:</h3>
       <div v-for="obj in objs"><a href="#" v-on:click="return function() { id_obj = obj.id; goto(); }()">{{ obj.title }}</a></div>
-      <h3><a href="#" v-on:click="goto2">Смотреть пройденные:</a></h3>
+      <h3><a href="#" v-on:click="goto2">Смотреть пройденные</a></h3>
 
   </div>
   <script src="https://unpkg.com/vue"></script>

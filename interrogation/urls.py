@@ -1,8 +1,5 @@
-from django.conf.urls import url
 from .views import *
-from django.urls import include, path
-from rest_framework import routers
-
+from django.urls import path
 
 urlpatterns = [
     path('interrogations/', InterrogationList.as_view(), name='interrogations-list'),
